@@ -2,9 +2,14 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prismaClient } from "../prisma/prismaClient";
 import transport from "../utils/mailer";
+import {
+  BETTER_AUTH_URL,
+  DISCORD_CLIENT_ID,
+  DISCORD_CLIENT_SECRET,
+} from "astro:env/server";
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: BETTER_AUTH_URL,
   database: prismaAdapter(prismaClient, { provider: "mysql" }),
   emailAndPassword: {
     enabled: true,
@@ -22,25 +27,25 @@ export const auth = betterAuth({
   },
   socialProviders: {
     discord: {
-      clientId: process.env.DISCORD_CLIENT_ID as string,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+      clientId: DISCORD_CLIENT_ID as string,
+      clientSecret: DISCORD_CLIENT_SECRET as string,
     },
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    /*  github: {
+      clientId: GITHUB_CLIENT_ID as string,
+      clientSecret: GITHUB_CLIENT_SECRET as string,
     },
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: GOOGLE_CLIENT_ID as string,
+      clientSecret: GOOGLE_CLIENT_SECRET as string,
     },
     microsoft: {
-      clientId: process.env.MICROSOFT_CLIENT_ID as string,
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET as string,
+      clientId: MICROSOFT_CLIENT_ID as string,
+      clientSecret: MICROSOFT_CLIENT_SECRET as string,
       // Optional
       tenantId: "common",
       authority: "https://login.microsoftonline.com", // Authentication authority URL
       prompt: "select_account", // Forces account selection
-    },
+    }, */
     // bsky.social
   },
 });

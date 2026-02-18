@@ -1,0 +1,14 @@
+---
+const SIGN_IN_ID = "btn_signin";
+---
+
+<button id="btn_signin">Sign In</button>
+
+<script>
+  document
+    .getElementById("btn_signin")
+    ?.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      window.location.replace("/sign-in");
+    });
+</script>

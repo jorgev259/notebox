@@ -1,0 +1,48 @@
+model Inbox {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(cuid())
+  urlName  String @unique @db.VarChar(50)
+
+  name        String   @db.VarChar(50)
+  lockedUntil DateTime
+  locked      Boolean  @default(dbgenerated())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  notes  Note[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Note {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(cuid())
+
+  content     String       @db.VarChar(250)
+  signature   String?      @db.VarChar(50)
+  attachments Attachment[]
+
+  inboxId Int
+  inbox   Inbox  @relation(fields: [inboxId], references: [id])
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attachment {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(cuid())
+
+  width  Int
+  height Int
+  alt    String?
+
+  noteId Int
+  note   Note @relation(fields: [noteId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
