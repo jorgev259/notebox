@@ -16,7 +16,7 @@ export default defineConfig({
   env: {
     schema: {
       DATABASE_URL: envField.string({ access: "secret", context: "server" }),
-      BETTER_AUTH_URL: envField.string({ access: "secret", context: "server" }),
+      BETTER_AUTH_URL: envField.string({ access: "public", context: "client" }),
       DISCORD_CLIENT_ID: envField.string({
         access: "secret",
         context: "server",

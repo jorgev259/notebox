@@ -1,5 +1,12 @@
 ---
+import NavBar from "@/components/NavBar.astro";
 import "../styles/global.css";
+
+interface Props {
+  navBar?: boolean;
+}
+
+const { navBar = true } = Astro.props;
 ---
 
 <html lang="en">
@@ -11,7 +18,18 @@ import "../styles/global.css";
     <meta name="generator" content={Astro.generator} />
     <title>Astro</title>
   </head>
-  <body>
-    <slot />
+  <body
+    class="bg-linear-to-br from-blue-50 via-cyan-50 to-blue-100 min-h-screen"
+  >
+    {
+      navBar ? (
+        <header>
+          <NavBar />
+        </header>
+      ) : null
+    }
+    <main class="p-4">
+      <slot />
+    </main>
   </body>
 </html>

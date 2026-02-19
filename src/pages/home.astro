@@ -1,0 +1,170 @@
+---
+import LayoutGlobal from "@/layouts/LayoutGlobal.astro";
+import { GET } from "./api/inbox/list";
+import type { Inbox } from "@/prisma/generated/client";
+
+const { isAuthed } = Astro.locals;
+if (!isAuthed) Astro.redirect("/sign-in");
+
+const res = await GET(Astro);
+const inboxes: Inbox[] = await res.json();
+---
+
+<LayoutGlobal>
+  <div class="min-h-screen flex flex-col">
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      <!-- Inboxes Grid -->
+      {inboxes && inboxes.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {inboxes.map((inbox) => (
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+              <!-- Placeholder Box Image -->
+              <div class="aspect-square bg-linear-to-br from-blue-200 to-cyan-200 flex items-center justify-center">
+                <div class="text-center">
+                  <svg class="w-16 h-16 text-blue-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9-4v4m4-4v4"></path>
+                  </svg>
+                </div>
+              </div>
+              <!-- Inbox Info -->
+              <div class="p-4">
+                <h3 class="text-lg font-semibold text-blue-900 mb-2">{inbox.name}</h3>
+                <p class="text-sm text-blue-600">
+                  Locked until: {new Date(inbox.lockedUntil).toLocaleDateString()}
+                </p>
+                     <a href={`/inbox/${inbox.urlName}`} class="text-sm text-blue-600">
+                  Go to inbox
+                </a>
+              </div>
+ 
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="flex flex-col items-center justify-center py-20">
+          <svg class="w-24 h-24 text-blue-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3v-6"></path>
+          </svg>
+          <p class="text-xl text-blue-700 font-medium">No inboxes yet</p>
+          <p class="text-blue-600 mt-2">Create one to get started!</p>
+        </div>
+      )}
+    </main>
+  </div>
+
+  <!-- Modal Form (initially hidden) -->
+  <div id="modal-inbox-create" class="modal fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div class="modal-content bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold text-blue-900 mb-4">Create New Inbox</h2>
+        <form id="form-inbox-create" class="space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-blue-900 mb-2">
+              Inbox Name
+            </label>
+            <div class="flex flex-col space-y-2.5">
+            <input
+              type="text"
+              id="form-input-name"
+              name="name"
+              required
+              max={50}
+              class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter inbox name"
+            />
+                <input
+              type="text"
+              id="form-input-url-name"
+              name="urlName"
+              required
+              class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              readonly
+              max={50}
+            />
+            </div>
+          </div>
+
+          <div>
+            <label for="lockedUntil" class="block text-sm font-medium text-blue-900 mb-2">
+              Locked Until
+            </label>
+            <input
+              type="datetime-local"
+              id="lockedUntil"
+              name="lockedUntil"
+              required
+              class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button
+              type="submit"
+              id="btn-inbox-modal-create"
+              class=" flex flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 ease-in-out"
+            >
+          
+              Create
+              
+            </button>
+            <button
+              type="button"
+              id="btn-inbox-modal-close"
+              class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200 ease-in-out"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </LayoutGlobal>
+
+
+<script>
+  import slugify from "@sindresorhus/slugify";
+  import { BETTER_AUTH_URL } from "astro:env/client";
+
+
+  function handleCreateInbox(ev: Event){
+    ev.preventDefault();
+
+    const form = ev.target as HTMLFormElement;
+    const formData = form.elements;
+    const body = {
+      name: formData["name"].value,
+      lockedUntil: new Date(formData["lockedUntil"].value).toISOString()
+    };
+
+    fetch("/api/inbox", { method: "POST", body: JSON.stringify(body) }).then(res => {if(res.status !== 200){
+      throw new Error(res.statusText)
+    }
+    } )
+    .then(()=> {window.location.reload()})
+    .catch(err => {
+      console.error("Error creating inbox", err);
+      alert("Error creating inbox: " + err.message);
+    });
+  }
+
+  document
+    .getElementById("form-inbox-create")
+    ?.addEventListener("submit", handleCreateInbox);
+
+  function toggleCreateModal(ev: Event){
+    ev.preventDefault();
+    document.getElementById("modal-inbox-create")?.classList.toggle('flex');
+    document.getElementById("modal-inbox-create")?.classList.toggle('hidden');
+  }
+
+  document.getElementById("btn-inbox-modal-open")?.addEventListener("click", toggleCreateModal);
+  document.getElementById("btn-inbox-modal-close")?.addEventListener("click", toggleCreateModal);
+
+  document.getElementById("form-input-name")?.addEventListener("input", (ev) => {
+    const input = ev.target as HTMLInputElement;
+    const urlName = slugify(input.value);
+    const element = document.getElementById("form-input-url-name") as HTMLInputElement;
+    element.value = `${BETTER_AUTH_URL}/inbox/${urlName}`;  
+  });
+</script>

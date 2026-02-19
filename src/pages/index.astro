@@ -1,11 +1,8 @@
 ---
-import HomePage from "./_HomePage.astro";
-import InboxHomePage from "./_InboxHomePage.astro";
 import LayoutGlobal from "../layouts/LayoutGlobal.astro";
 
 const { isAuthed } = Astro.locals;
+if (isAuthed) Astro.redirect("/home");
 ---
 
-<LayoutGlobal>
-  {isAuthed ? <InboxHomePage /> : <HomePage />}
-</LayoutGlobal>
+<LayoutGlobal />

@@ -1,0 +1,74 @@
+---
+const { user } = Astro.locals;
+
+import SignOutIcon from "@/assets/icons/sign-out-svgrepo-com.svg";
+import SignInIcon from "@/assets/icons/sign-in-alt-2-svgrepo-com.svg";
+---
+
+<nav class="">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex justify-between items-center">
+      <a href="/">
+        <h1 class="text-3xl font-bold text-blue-900">Notebox</h1>
+      </a>
+      {
+        user ? (
+          <>
+            <button
+              id="btn-inbox-modal-open"
+              class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              {user.name}
+            </button>
+            <a
+              href="/home"
+              id="btn-inbox-modal-open"
+              class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              My Inboxes
+            </a>
+            <button
+              id="btn-signout"
+              class="flex space-x-2 text-blue-500 font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              <SignOutIcon height={30} width={30} class="fill-blue-500" />
+              Sign Out
+            </button>
+          </>
+        ) : (
+          <button
+            id="btn-signin"
+            class="flex space-x-2 text-blue-500 font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+          >
+            <SignInIcon height={30} width={30} class="fill-blue-500" />
+            Sign In
+          </button>
+        )
+      }
+    </div>
+  </div>
+</nav>
+
+<script>
+  import { authClient } from "@/better-auth/auth-js";
+
+  document
+    .getElementById("btn-signin")
+    ?.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      window.location.replace("/sign-in");
+    });
+
+  document
+    .getElementById("btn-signout")
+    ?.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            window.location.replace("/");
+          },
+        },
+      });
+    });
+</script>

@@ -4,3 +4,19 @@ button:hover,
 input[type="submit"]:hover {
   cursor: pointer;
 }
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(60px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.modal .modal-content {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}

@@ -1,3 +1,12 @@
 ---
+import LayoutGlobal from "@/layouts/LayoutGlobal.astro";
+import { GET } from "../api/inbox/[inboxId]";
+const res = await GET(Astro);
 
+if (res.status === 404) return Astro.redirect("/not-found");
+if (res.status !== 200) throw new Error("Error fetching inbox");
+
+const inbox = await res.json();
 ---
+
+<LayoutGlobal> 123 </LayoutGlobal>
