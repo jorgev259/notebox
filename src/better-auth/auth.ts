@@ -2,7 +2,11 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prismaClient } from "../prisma/prismaClient";
 import transport from "../utils/mailer";
-import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from "astro:env/server";
+import {
+  DATABASE_PROVIDER,
+  DISCORD_CLIENT_ID,
+  DISCORD_CLIENT_SECRET,
+} from "astro:env/server";
 import { BETTER_AUTH_URL } from "astro:env/client";
 
 export const auth = betterAuth({

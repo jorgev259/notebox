@@ -1,0 +1,22 @@
+services:
+  notebox-web:
+    container_name: notebox-web
+    pull_policy: build
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4321:4321"
+    environment:
+      - DATABASE_HOST=notebox-db
+      - DATABASE_PORT=3306
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=notebook
+
+  notebox-db:
+    container_name: notebox-db
+    image: mariadb:latest
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=notebox
